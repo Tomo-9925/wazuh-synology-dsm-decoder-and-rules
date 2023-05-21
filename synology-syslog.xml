@@ -1,0 +1,126 @@
+<!--
+WinFileService Example:
+Jan 2 15:04:05 DSXXXX WinFileService Event: rename, Path: /hoge/fuga -> /hoge/fuga, File/Folder: File, Size: 0 Bytes, User: admin, IP: XXX.XXX.XXX.XXX
+Jan 2 15:04:05 DSXXXX WinFileService Event: delete, Path: /hoge/fuga, File/Folder: File, Size: 1.48 MB, User: admin, IP: XXX.XXX.XXX.XXX
+-->
+
+<decoder name="synology-winfileservice">
+  <prematch>WinFileService Event:</prematch>
+</decoder>
+
+<decoder name="synology-winfileservice">
+  <parent>synology-winfileservice</parent>
+  <regex type="pcre2">WinFileService Event: ([^,]+), Path: (.+), File\/Folder: (\w+), Size: (\S+) (\w+), User: ([^,]+), IP: (\d+\.\d+\.\d+\.\d+)</regex>
+  <order>action, data, type, size_num, size_unit, srcuser, srcip</order>
+</decoder>
+
+<!--
+Connection Example:
+Jan 2 15:04:05 DSXXXX Connection: User [admin] from [HostName(XXX.XXX.XXX.XXX)] via [CIFS(SMB3)] accessed shared folder [FolderName].
+Jan 2 15:04:05 DSXXXX Connection: User [admin] from [XXX.XXX.XXX.XXX] signed in to [DSM] successfully via [password].
+Jan 2 15:04:05 DSXXXX Connection: User [admin] from [XXX.XXX.XXX.XXX] logged in successfully via [SSH].
+Jan 2 15:04:05 DSXXXX Connection: User [admin] from [XXX.XXX.XXX.XXX] failed to sign in to [DSM] via [password] due to authorization failure.
+-->
+
+<decoder name="synology-connection">
+  <program_name>Connection</program_name>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex type="pcre2">User \[([^\]]+)\] from \[[^\(]*?\(?(\d+\.\d+\.\d+\.\d+)\)?\]</regex>
+  <order>srcuser, srcip</order>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex type="pcre2">via \[([^\]]+)\]</regex>
+  <order>protocol</order>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex type="pcre2">to \[([^\]]+)\]</regex>
+  <order>system_name</order>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex>(success)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex>(fail)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-connection">
+  <parent>synology-connection</parent>
+  <regex>(access)</regex>
+  <order>status</order>
+</decoder>
+
+<!--
+Backup Example:
+Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task finished successfully. [135819 files scanned] [27 new files] [135792 files unchanged]
+Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Failed to run backup task.
+Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task was cancelled.
+Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task was partially completed.
+Jan 2 15:04:05 DSXXXX Backup SYSTEM: Scheduled backup has been skipped because it collides an undergoing backup task. please re-arrange the backup schedule to avoid collisions.
+Jan 2 15:04:05 DSXXXX Backup SYSTEM: Backup task [TaskName] was removed.
+-->
+
+<decoder name="synology-backup">
+  <prematch>Backup SYSTEM:</prematch>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex type="pcre2">\[([^\]]*)\]\[([^\]]*)\]</regex>
+  <order>backup_location, backup_task</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex type="pcre2">Backup task \[([^\]]*)\] was (\w+)</regex>
+  <order>backup_task, action</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex type="pcre2">Backup task \[([^\]]*)\] (\w+)\.</regex>
+  <order>backup_task, action</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex>(fail)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex>(success)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex>(cancel)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex>(partial)</regex>
+  <order>status</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex>(skip)</regex>
+  <order>status</order>
+</decoder>
+
