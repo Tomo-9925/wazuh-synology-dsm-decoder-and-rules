@@ -1,7 +1,5 @@
 <!--
-WinFileService Example:
-Jan 2 15:04:05 DSXXXX WinFileService Event: rename, Path: /hoge/fuga -> /hoge/fuga, File/Folder: File, Size: 0 Bytes, User: admin, IP: XXX.XXX.XXX.XXX
-Jan 2 15:04:05 DSXXXX WinFileService Event: delete, Path: /hoge/fuga, File/Folder: File, Size: 1.48 MB, User: admin, IP: XXX.XXX.XXX.XXX
+Oct 27 15:05:11 DSXXXX WinFileService Event: read, Path: /path/to/anything, File/Folder: File, Size: 1.00 KB, User: UserName, IP: XXX.XXX.XXX.XXX
 -->
 
 <decoder name="synology-winfileservice">
@@ -46,81 +44,84 @@ Jan 2 15:04:05 DSXXXX Connection: User [admin] from [XXX.XXX.XXX.XXX] failed to 
 
 <decoder name="synology-connection">
   <parent>synology-connection</parent>
-  <regex>(success)</regex>
+  <regex type="pcre2">(success)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-connection">
   <parent>synology-connection</parent>
-  <regex>(fail)</regex>
+  <regex type="pcre2">(failed)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-connection">
   <parent>synology-connection</parent>
-  <regex>(access)</regex>
+  <regex type="pcre2">(access)</regex>
   <order>status</order>
 </decoder>
 
 <!--
 Backup Example:
-Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task finished successfully. [135819 files scanned] [27 new files] [135792 files unchanged]
-Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Failed to run backup task.
-Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task was cancelled.
-Jan 2 15:04:05 DSXXXX Backup SYSTEM:#011[Network][TaskName] Backup task was partially completed.
-Jan 2 15:04:05 DSXXXX Backup SYSTEM: Scheduled backup has been skipped because it collides an undergoing backup task. please re-arrange the backup schedule to avoid collisions.
-Jan 2 15:04:05 DSXXXX Backup SYSTEM: Backup task [TaskName] was removed.
+Oct 20 19:51:11 DSXXXX Hyper_Backup: UserName:      [Network][TaskName] Backup task started.
+Oct 20 20:02:39 DSXXXX Hyper_Backup: UserName:      [Network][TaskName] Backup task finished successfully. [812355 files scanned] [812355 files unchanged]
+Oct 27 15:12:39 DSXXXX Hyper_Backup: UserName:     Backup task [TaskName] was removed.
 -->
 
 <decoder name="synology-backup">
-  <prematch>Backup SYSTEM:</prematch>
+  <program_name>Hyper_Backup</program_name>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex type="pcre2">\[([^\]]*)\]\[([^\]]*)\]</regex>
+  <regex type="pcre2">Hyper_backup: ([^:]+): </regex>
+  <order>user</order>
+</decoder>
+
+<decoder name="synology-backup">
+  <parent>synology-backup</parent>
+  <regex type="pcre2">\[([^\]]*)\]\[([^\]]*)\] Backup</regex>
   <order>backup_location, backup_task</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex type="pcre2">Backup task \[([^\]]*)\] was (\w+)</regex>
+  <regex type="pcre2">task \[([^\]]*)\] was ([^\. \[\]]+)\.</regex>
   <order>backup_task, action</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex type="pcre2">Backup task \[([^\]]*)\] (\w+)\.</regex>
-  <order>backup_task, action</order>
+  <regex type="pcre2">task ([^\. \[\]]+)\.</regex>
+  <order>action</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex>(fail)</regex>
+  <regex type="pcre2">(fail)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex>(success)</regex>
+  <regex type="pcre2">(success)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex>(cancel)</regex>
+  <regex type="pcre2">(cancel)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex>(partial)</regex>
+  <regex type="pcre2">(partial)</regex>
   <order>status</order>
 </decoder>
 
 <decoder name="synology-backup">
   <parent>synology-backup</parent>
-  <regex>(skip)</regex>
+  <regex type="pcre2">(skip)</regex>
   <order>status</order>
 </decoder>
 
