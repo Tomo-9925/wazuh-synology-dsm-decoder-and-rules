@@ -4,7 +4,7 @@
         <decoded_as>synology-connection</decoded_as>
         <program_name>Connection</program_name>
         <status>fail</status>
-        <description>Synolgoy user login failed.</description>
+        <description>Synology user login failed.</description>
         <mitre>
             <id>T1110.001</id>
         </mitre>
@@ -32,7 +32,7 @@
     <rule id="100004" level="10" frequency="8" timeframe="120">
         <if_matched_sid>100001</if_matched_sid>
         <same_srcip />
-        <description>Sybology brute force (multiple failed logins by same srcip).</description>
+        <description>Synology brute force (multiple failed logins by same srcip).</description>
         <mitre>
             <id>T1110.001</id>
         </mitre>
@@ -40,7 +40,7 @@
     <rule id="100005" level="10" frequency="8" timeframe="120">
         <if_matched_sid>100001</if_matched_sid>
         <same_srcuser />
-        <description>Sybology brute force (multiple failed logins by same srcuser).</description>
+        <description>Synology brute force (multiple failed logins by same srcuser).</description>
         <mitre>
             <id>T1110.001</id>
         </mitre>
@@ -62,11 +62,11 @@
             <id>T1565</id>
         </mitre>
     </rule>
-    <!--Bakcup-->
+    <!--Backup-->
     <rule id="100021" level="12">
         <decoded_as>synology-backup</decoded_as>
         <status>fail|cancel|partial|skip</status>
-        <description>Synolgoy backup failed.</description>
+        <description>Synology backup failed.</description>
         <mitre>
             <id>T1490</id>
         </mitre>
@@ -74,7 +74,7 @@
     <rule id="100022" level="12">
         <decoded_as>synology-backup</decoded_as>
         <action>removed</action>
-        <description>Synolgoy backup task removed.</description>
+        <description>Synology backup task removed.</description>
         <mitre>
             <id>T1490</id>
         </mitre>
@@ -82,7 +82,7 @@
     <rule id="100023" level="3">
         <decoded_as>synology-backup</decoded_as>
         <status>success</status>
-        <description>Synolgoy backup succeeded.</description>
+        <description>Synology backup succeeded.</description>
     </rule>
     <rule id="100024" level="14" frequency="3" timeframe="604800">
         <if_matched_sid>100021</if_matched_sid>
